@@ -56,6 +56,7 @@ json_escape_stream() {
   sed -e ':a' -e 'N' -e '$!ba' \
       -e 's/\\/\\\\/g' \
       -e 's/"/\\"/g' \
+      -e 's/\t/\\t/g' \
       -e 's/\r/\\r/g' \
       -e 's/\n/\\n/g'
 }
