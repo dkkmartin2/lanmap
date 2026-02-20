@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum FileNodeType {
+  FILE
+  DIR
+}
+
+enum FileContentType {
+  TEXT
+  BINARY
+  NONE
+}
+
+model Host {
+  id         String     @id @default(cuid())
+  label      String
+  address    String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  fileNodes  FileNode[]
+  importRuns ImportRun[]
+}
+
+model FileNode {
+  id          String          @id @default(cuid())
+  hostId      String
+  host        Host            @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  path        String
+  name        String
+  type        FileNodeType
+  size        Int?
+  mtime       DateTime?
+  isHidden    Boolean         @default(false)
+  contentType FileContentType @default(NONE)
+  content     String?
+  sha256      String?
+  createdAt   DateTime        @default(now())
+
+  @@unique([hostId, path])
+  @@index([hostId, type])
+  @@index([hostId, path])
+}
+
+model ImportRun {
+  id          String   @id @default(cuid())
+  hostId      String
+  host        Host     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  version     String
+  generatedAt DateTime
+  rootPath    String
+  importedAt  DateTime @default(now())
+  entryCount  Int
+  payloadSize Int
+  warnings    String?
+}
