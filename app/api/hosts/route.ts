@@ -6,6 +6,16 @@ export async function GET(): Promise<NextResponse> {
   const hosts = await prisma.host.findMany({
     orderBy: { updatedAt: "desc" },
     include: {
+      importRuns: {
+        orderBy: { importedAt: "desc" },
+        take: 1,
+        select: {
+          rootPath: true,
+          runPath: true,
+          runParentPath: true,
+          importedAt: true
+        }
+      },
       _count: {
         select: {
           fileNodes: true
@@ -15,13 +25,20 @@ export async function GET(): Promise<NextResponse> {
   });
 
   return NextResponse.json({
-    hosts: hosts.map((host) => ({
-      id: host.id,
-      label: host.label,
-      address: host.address,
-      updatedAt: host.updatedAt.toISOString(),
-      fileCount: host._count.fileNodes
-    }))
+    hosts: hosts.map((host) => {
+      const latestImport = host.importRuns[0] ?? null;
+      return {
+        id: host.id,
+        label: host.label,
+        address: host.address,
+        updatedAt: host.updatedAt.toISOString(),
+        fileCount: host._count.fileNodes,
+        rootPath: latestImport?.rootPath ?? null,
+        runPath: latestImport?.runPath ?? null,
+        runParentPath: latestImport?.runParentPath ?? null,
+        importedAt: latestImport?.importedAt.toISOString() ?? null
+      };
+    })
   });
 }
 
@@ -63,7 +80,11 @@ export async function POST(request: Request): Promise<NextResponse> {
         label: host.label,
         address: host.address,
         updatedAt: host.updatedAt.toISOString(),
-        fileCount: 0
+        fileCount: 0,
+        rootPath: null,
+        runPath: null,
+        runParentPath: null,
+        importedAt: null
       }
     },
     { status: 201 }

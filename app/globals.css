@@ -18,7 +18,12 @@
 html,
 body {
   margin: 0;
-  min-height: 100%;
+  min-height: 100vh;
+  height: 100%;
+}
+
+body > div:first-child {
+  height: 100%;
 }
 
 body {
@@ -35,6 +40,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .topbar {
@@ -77,6 +84,8 @@ body {
   display: grid;
   gap: 1rem;
   grid-template-columns: minmax(250px, 320px) minmax(420px, 1fr) minmax(280px, 340px);
+  flex: 1;
+  min-height: 0;
 }
 
 .panel {
@@ -84,9 +93,12 @@ body {
   border: 1px solid var(--surface-border);
   border-radius: 0.9rem;
   padding: 0.9rem;
-  min-height: 70vh;
+  min-height: 0;
+  height: 100%;
   backdrop-filter: blur(4px);
   animation: panel-in 260ms ease both;
+  display: flex;
+  flex-direction: column;
 }
 
 .panel h2 {
@@ -119,12 +131,14 @@ label {
 
 input,
 textarea,
+select,
 button {
   font: inherit;
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   border: 1px solid var(--surface-border);
   background: rgba(0, 0, 0, 0.22);
@@ -162,7 +176,8 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 0.36rem;
-  max-height: 40vh;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -187,17 +202,45 @@ button:disabled {
 
 .tree-list {
   margin: 0;
-  padding-left: 1rem;
+  padding: 0;
   list-style: none;
 }
 
-.tree-list li {
-  margin: 0.2rem 0;
+.tree-list-root {
+  padding-left: 0.2rem;
+}
+
+.tree-list-nested {
+  margin-top: 0.1rem;
+  margin-left: 0.6rem;
+  padding-left: 0.55rem;
+  border-left: 1px solid rgba(159, 197, 218, 0.24);
+}
+
+.tree-node {
+  position: relative;
+  margin: 0.12rem 0;
+  padding-left: 0.2rem;
+}
+
+.tree-node::before {
+  content: "";
+  position: absolute;
+  left: -0.56rem;
+  top: 0.76rem;
+  width: 0.55rem;
+  border-top: 1px solid rgba(159, 197, 218, 0.24);
+}
+
+.tree-list-root > .tree-node::before {
+  display: none;
 }
 
 .tree-dir {
   cursor: pointer;
   color: var(--accent-warm);
+  user-select: none;
+  line-height: 1.45;
 }
 
 .tree-file {
@@ -208,6 +251,8 @@ button:disabled {
   color: var(--ink);
   font-family: var(--font-mono), monospace;
   font-size: 0.85rem;
+  line-height: 1.35;
+  padding: 0.1rem 0.25rem;
 }
 
 .tree-file.active,
@@ -223,6 +268,11 @@ button:disabled {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  min-height: 0;
+}
+
+.file-content-shell {
+  flex: 1;
 }
 
 .file-card h3 {
@@ -242,7 +292,8 @@ button:disabled {
   border: 1px solid rgba(159, 197, 218, 0.18);
   padding: 0.8rem;
   overflow: auto;
-  max-height: 62vh;
+  flex: 1;
+  min-height: 0;
   font-family: var(--font-mono), monospace;
   font-size: 0.84rem;
   line-height: 1.35;
@@ -253,6 +304,105 @@ button:disabled {
   padding: 0.8rem;
   background: rgba(249, 182, 79, 0.1);
   border: 1px solid rgba(249, 182, 79, 0.36);
+  overflow: auto;
+}
+
+.right-panel {
+  overflow: auto;
+}
+
+.center-panel {
+  overflow: auto;
+}
+
+.context-pack-launch {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.context-pack-launch small {
+  color: var(--ink-muted);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.56);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.modal-card {
+  width: min(100%, 980px);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 0.9rem;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--accent-warm);
+}
+
+.context-pack-controls {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  align-items: end;
+}
+
+.context-pack-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pack-tab {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--ink);
+  border: 1px solid rgba(159, 197, 218, 0.24);
+}
+
+.pack-tab.active {
+  border-color: rgba(249, 182, 79, 0.58);
+  background: rgba(249, 182, 79, 0.18);
+  color: #ffe3b1;
+}
+
+.context-pack-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.context-pack-actions small {
+  color: var(--ink-muted);
+}
+
+.context-pack-output {
+  min-height: 16rem;
+  max-height: 45vh;
+  overflow: auto;
+  font-family: var(--font-mono), monospace;
 }
 
 .panel-empty {

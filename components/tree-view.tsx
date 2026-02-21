@@ -21,7 +21,7 @@ function TreeBranch({
 }): JSX.Element {
   if (node.type === "file") {
     return (
-      <li>
+      <li className="tree-node tree-node-file">
         <button
           className={`tree-file ${selectedFileId === node.id ? "active" : ""}`}
           type="button"
@@ -35,13 +35,13 @@ function TreeBranch({
   }
 
   return (
-    <li>
+    <li className="tree-node tree-node-dir">
       <details open>
         <summary className="tree-dir" data-testid={`tree-dir-${node.path.replaceAll("/", "__")}`}>
           {node.name}
         </summary>
         {node.children.length > 0 ? (
-          <ul className="tree-list">
+          <ul className="tree-list tree-list-nested">
             {node.children.map((child) => (
               <TreeBranch
                 key={child.id + child.path}
@@ -63,7 +63,7 @@ export function TreeView({ nodes, selectedFileId, onFileSelect }: TreeViewProps)
   }
 
   return (
-    <ul className="tree-list">
+    <ul className="tree-list tree-list-root">
       {nodes.map((node) => (
         <TreeBranch
           key={node.id + node.path}

@@ -57,7 +57,11 @@ test.describe("LanMap dashboard e2e", () => {
           contentType: "text",
           content: "print('python payload content')"
         }
-      ]
+      ],
+      {
+        runPath: "/home/martin/Desktop/test-map2",
+        runParentPath: "/home/martin/Desktop"
+      }
     );
 
     await page.goto("/");
@@ -71,6 +75,15 @@ test.describe("LanMap dashboard e2e", () => {
 
     await page.getByTestId("tree-file-src__main.py").click();
     await expect(page.getByTestId("file-content")).toContainText("python payload content");
+
+    const parentFolder = page.getByTestId("tree-dir-__home__martin__Desktop");
+    await expect(parentFolder).toBeVisible();
+
+    await parentFolder.click();
+    await expect(page.getByTestId("tree-file-src__app.js")).toBeHidden();
+
+    await parentFolder.click();
+    await expect(page.getByTestId("tree-file-src__app.js")).toBeVisible();
   });
 
   test("renders binary metadata without text body", async ({ page }) => {

@@ -9,6 +9,7 @@ LanMap is a local Next.js dashboard for tracking hosts and filesystem intel duri
 - Directory tree per host
 - File reader for text files
 - Binary files stored as metadata only
+- Context pack generator (chunked markdown, compact/full snippets)
 - SQLite persistence with Prisma
 - Full Playwright E2E suite for critical flows
 

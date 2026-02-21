@@ -1,4 +1,5 @@
 import { FileContentType, FileNodeType } from "@prisma/client";
+import { dirname } from "node:path";
 
 import { decodeImportPayload } from "@/lib/payload";
 import { prisma } from "@/lib/prisma";
@@ -27,6 +28,8 @@ function mapContentType(type: "text" | "binary" | "none"): FileContentType {
 export async function importPayload(payload: string): Promise<ImportResult> {
   const decoded = decodeImportPayload(payload);
   const { data } = decoded;
+  const runPath = data.runPath ?? data.rootPath;
+  const runParentPath = data.runParentPath ?? dirname(runPath);
 
   const warnings: string[] = [];
 
@@ -76,6 +79,8 @@ export async function importPayload(payload: string): Promise<ImportResult> {
         version: data.version,
         generatedAt: new Date(data.generatedAt),
         rootPath: data.rootPath,
+        runPath,
+        runParentPath,
         entryCount: data.entries.length,
         payloadSize: decoded.rawSize,
         warnings: warnings.length > 0 ? warnings.join("\n") : null

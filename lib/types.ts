@@ -4,8 +4,8 @@ export type RawImportEntry = {
   path: string;
   name: string;
   type: "file" | "dir";
-  size?: number;
-  mtime?: string;
+  size?: number | null;
+  mtime?: string | null;
   isHidden?: boolean;
   contentType?: "text" | "binary" | "none";
   content?: string | null;
@@ -16,6 +16,8 @@ export type ImportPayloadData = {
   version: "1";
   generatedAt: string;
   rootPath: string;
+  runPath?: string;
+  runParentPath?: string;
   host: {
     label: string;
     address: string;
@@ -35,6 +37,10 @@ export type HostListItem = {
   address: string;
   updatedAt: string;
   fileCount: number;
+  rootPath: string | null;
+  runPath: string | null;
+  runParentPath: string | null;
+  importedAt: string | null;
 };
 
 export type TreeNode = {
@@ -43,4 +49,33 @@ export type TreeNode = {
   path: string;
   type: "file" | "dir";
   children: TreeNode[];
+};
+
+export type ContextPackSnippetMode = "compact" | "full";
+export type ContextPackChunkPreset = "small" | "medium" | "large";
+
+export type ContextPackRequest = {
+  hostId: string;
+  snippetMode?: ContextPackSnippetMode;
+  chunkPreset?: ContextPackChunkPreset;
+};
+
+export type ContextPackPart = {
+  index: number;
+  total: number;
+  content: string;
+  stats: {
+    files: number;
+    snippetCount: number;
+    chars: number;
+  };
+};
+
+export type ContextPackResponse = {
+  parts: ContextPackPart[];
+  summary: {
+    hostId: string;
+    generatedAt: string;
+    truncatedFiles: number;
+  };
 };

@@ -47,11 +47,11 @@ function validateEntry(raw: RawImportEntry): RawImportEntry {
     throw new Error(`Invalid contentType for path ${path}`);
   }
 
-  if (raw.size !== undefined && (!Number.isFinite(raw.size) || raw.size < 0)) {
+  if (raw.size !== undefined && raw.size !== null && (!Number.isFinite(raw.size) || raw.size < 0)) {
     throw new Error(`Invalid size for path ${path}`);
   }
 
-  if (raw.mtime !== undefined) {
+  if (raw.mtime !== undefined && raw.mtime !== null) {
     const timestamp = Date.parse(raw.mtime);
     if (Number.isNaN(timestamp)) {
       throw new Error(`Invalid mtime for path ${path}`);
@@ -66,6 +66,8 @@ function validateEntry(raw: RawImportEntry): RawImportEntry {
     ...raw,
     path,
     name,
+    size: raw.size ?? undefined,
+    mtime: raw.mtime ?? undefined,
     isHidden: raw.isHidden ?? isHiddenPath(path),
     contentType: raw.contentType ?? (raw.type === "dir" ? "none" : "binary"),
     content: raw.content ?? null,
@@ -89,6 +91,14 @@ function validatePayloadShape(value: unknown): ImportPayloadData {
   }
 
   const rootPath = ensureString(parsed.rootPath, "rootPath");
+  const runPath =
+    parsed.runPath === undefined || parsed.runPath === null
+      ? undefined
+      : ensureString(parsed.runPath, "runPath");
+  const runParentPath =
+    parsed.runParentPath === undefined || parsed.runParentPath === null
+      ? undefined
+      : ensureString(parsed.runParentPath, "runParentPath");
 
   if (typeof parsed.host !== "object" || parsed.host === null) {
     throw new Error("Missing host metadata");
@@ -117,6 +127,8 @@ function validatePayloadShape(value: unknown): ImportPayloadData {
     version: "1",
     generatedAt,
     rootPath,
+    runPath,
+    runParentPath,
     host,
     entries
   };

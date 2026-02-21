@@ -54,6 +54,8 @@ model ImportRun {
   version     String
   generatedAt DateTime
   rootPath    String
+  runPath     String?
+  runParentPath String?
   importedAt  DateTime @default(now())
   entryCount  Int
   payloadSize Int

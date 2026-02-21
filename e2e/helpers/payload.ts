@@ -5,6 +5,12 @@ type Host = {
   address: string;
 };
 
+type PayloadMeta = {
+  rootPath?: string;
+  runPath?: string;
+  runParentPath?: string;
+};
+
 type Entry = {
   path: string;
   name: string;
@@ -17,11 +23,13 @@ type Entry = {
   sha256?: string | null;
 };
 
-export function makePayload(host: Host, entries: Entry[]): string {
+export function makePayload(host: Host, entries: Entry[], meta: PayloadMeta = {}): string {
   const data = {
     version: "1",
     generatedAt: new Date().toISOString(),
-    rootPath: "/home/user",
+    rootPath: meta.rootPath ?? "/home/user",
+    runPath: meta.runPath ?? "/home/user/projects/sample",
+    runParentPath: meta.runParentPath ?? "/home/user/projects",
     host,
     entries
   };
