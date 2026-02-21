@@ -123,12 +123,16 @@ TMP_LIST="$(mktemp)"
 trap 'rm -f "$TMP_JSON" "$TMP_LIST"' EXIT INT TERM
 
 ROOT_ABS="$(cd "$ROOT" && pwd)"
+RUN_PATH_ABS="$(pwd)"
+RUN_PARENT_ABS="$(cd "$RUN_PATH_ABS/.." && pwd)"
 NOW_ISO="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
 {
-  printf '{"version":"1","generatedAt":"%s","rootPath":"%s","host":{"label":"%s","address":"%s"},"entries":[' \
+  printf '{"version":"1","generatedAt":"%s","rootPath":"%s","runPath":"%s","runParentPath":"%s","host":{"label":"%s","address":"%s"},"entries":[' \
     "$(json_escape_value "$NOW_ISO")" \
     "$(json_escape_value "$ROOT_ABS")" \
+    "$(json_escape_value "$RUN_PATH_ABS")" \
+    "$(json_escape_value "$RUN_PARENT_ABS")" \
     "$(json_escape_value "$HOST_LABEL")" \
     "$(json_escape_value "$HOST_ADDRESS")"
 
